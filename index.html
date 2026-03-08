@@ -846,6 +846,11 @@
 
       function closeThankYouPage() {
         document.getElementById("thankYouPage").classList.remove("active");
+        // หยุดวิดีโอทั้งหมด
+        document.querySelectorAll(".video-container video").forEach((v) => {
+          v.pause();
+          v.currentTime = 0;
+        });
         createConfetti();
       }
 
@@ -961,7 +966,7 @@
             video.className = index === 0 ? "active" : "";
             video.src = "video/" + encodeURIComponent(videoName);
             video.controls = true;
-            video.muted = true;
+            video.muted = false;
             video.playsInline = true;
             video.addEventListener("ended", () => playNextVideo());
             videoContainer.appendChild(video);
@@ -1014,7 +1019,16 @@
         // Close modal on outside click
         document.querySelectorAll(".modal").forEach((modal) => {
           modal.addEventListener("click", (e) => {
-            if (e.target === modal) modal.classList.remove("active");
+            if (e.target === modal) {
+              modal.classList.remove("active");
+              // หยุดวิดีโอทั้งหมด
+              document
+                .querySelectorAll(".video-container video")
+                .forEach((v) => {
+                  v.pause();
+                  v.currentTime = 0;
+                });
+            }
           });
         });
 
