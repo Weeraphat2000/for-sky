@@ -623,8 +623,78 @@
       </div>
     </div>
 
-    <!-- โหลดข้อมูลแบบไม่ cache -->
     <script>
+      // Global variables
+      let currentSlide = 0;
+      let slides, dots;
+
+      // Global functions for onclick
+      function changeSlide(direction) {
+        currentSlide += direction;
+        showSlide(currentSlide);
+      }
+
+      function goToSlide(index) {
+        currentSlide = index;
+        showSlide(currentSlide);
+      }
+
+      function showSlide(index) {
+        if (index >= slides.length) currentSlide = 0;
+        if (index < 0) currentSlide = slides.length - 1;
+
+        slides.forEach((slide) => slide.classList.remove("active"));
+        dots.forEach((dot) => dot.classList.remove("active"));
+
+        slides[currentSlide].classList.add("active");
+        dots[currentSlide].classList.add("active");
+      }
+
+      function showYesModal() {
+        document.getElementById("yesModal").classList.add("active");
+        createConfetti();
+      }
+
+      function showNoModal() {
+        document.getElementById("noModal").classList.add("active");
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove("active");
+      }
+
+      function createConfetti() {
+        const confettiContainer = document.getElementById("confetti");
+        confettiContainer.classList.add("active");
+
+        const colors = [
+          "#ff6b6b",
+          "#feca57",
+          "#48dbfb",
+          "#ff9ff3",
+          "#54a0ff",
+          "#5f27cd",
+          "#00d2d3",
+          "#ff9f43",
+        ];
+
+        for (let i = 0; i < 150; i++) {
+          const confetti = document.createElement("div");
+          confetti.className = "confetti-piece";
+          confetti.style.left = Math.random() * 100 + "vw";
+          confetti.style.backgroundColor =
+            colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.animationDelay = Math.random() * 2 + "s";
+          confetti.style.borderRadius = Math.random() > 0.5 ? "50%" : "0";
+          confettiContainer.appendChild(confetti);
+        }
+
+        setTimeout(() => {
+          confettiContainer.innerHTML = "";
+          confettiContainer.classList.remove("active");
+        }, 5000);
+      }
+
       // โหลด JS แบบ no-cache
       function loadScript(src) {
         const script = document.createElement("script");
@@ -638,22 +708,18 @@
           initializeApp();
         },
       );
-    </script>
 
-    <script>
       function initializeApp() {
         // สร้าง Slides และ Dots จากรายการรูปใน images.js
         const slidesContainer = document.getElementById("slidesContainer");
         const dotsContainer = document.getElementById("dotsContainer");
 
         imageList.forEach((imageName, index) => {
-          // สร้าง slide
           const slide = document.createElement("div");
           slide.className = "slide" + (index === 0 ? " active" : "");
           slide.innerHTML = `<img src="images/${encodeURIComponent(imageName)}" alt="ความทรงจำกับ Sky" onerror="this.parentElement.style.display='none'" />`;
           slidesContainer.appendChild(slide);
 
-          // สร้าง dot
           const dot = document.createElement("div");
           dot.className = "dot" + (index === 0 ? " active" : "");
           dot.onclick = () => goToSlide(index);
@@ -662,8 +728,6 @@
 
         // สร้าง Reasons จากรายการใน reasons.js
         const reasonsContainer = document.getElementById("reasonsContainer");
-
-        // อัพเดตจำนวนเหตุผลตาม reasonsList.length
         document.getElementById("reasonsCount").textContent =
           reasonsList.length;
 
@@ -672,42 +736,18 @@
           reason.className = "reason";
           reason.style.animationDelay = `${(index + 1) * 0.1}s`;
           reason.innerHTML = `
-          <div class="reason-number">${index + 1}</div>
-          <div class="reason-text">${reasonText}</div>
-        `;
+            <div class="reason-number">${index + 1}</div>
+            <div class="reason-text">${reasonText}</div>
+          `;
           reasonsContainer.appendChild(reason);
         });
 
-        // Slideshow
-        let currentSlide = 0;
-        let slides = document.querySelectorAll(".slide");
-        let dots = document.querySelectorAll(".dot");
-
-        function showSlide(index) {
-          if (index >= slides.length) currentSlide = 0;
-          if (index < 0) currentSlide = slides.length - 1;
-
-          slides.forEach((slide) => slide.classList.remove("active"));
-          dots.forEach((dot) => dot.classList.remove("active"));
-
-          slides[currentSlide].classList.add("active");
-          dots[currentSlide].classList.add("active");
-        }
-
-        function changeSlide(direction) {
-          currentSlide += direction;
-          showSlide(currentSlide);
-        }
-
-        function goToSlide(index) {
-          currentSlide = index;
-          showSlide(currentSlide);
-        }
+        // Update global references
+        slides = document.querySelectorAll(".slide");
+        dots = document.querySelectorAll(".dot");
 
         // Auto slideshow
-        setInterval(() => {
-          changeSlide(1);
-        }, 4000);
+        setInterval(() => changeSlide(1), 4000);
 
         // Floating Hearts
         function createHeart() {
@@ -720,69 +760,18 @@
           heart.style.animationDuration = Math.random() * 3 + 4 + "s";
           heart.style.fontSize = Math.random() * 15 + 15 + "px";
           document.getElementById("heartsContainer").appendChild(heart);
-
           setTimeout(() => heart.remove(), 7000);
         }
-
         setInterval(createHeart, 500);
-
-        // Confetti
-        function createConfetti() {
-          const confettiContainer = document.getElementById("confetti");
-          confettiContainer.classList.add("active");
-
-          const colors = [
-            "#ff6b6b",
-            "#feca57",
-            "#48dbfb",
-            "#ff9ff3",
-            "#54a0ff",
-            "#5f27cd",
-            "#00d2d3",
-            "#ff9f43",
-          ];
-
-          for (let i = 0; i < 150; i++) {
-            const confetti = document.createElement("div");
-            confetti.className = "confetti-piece";
-            confetti.style.left = Math.random() * 100 + "vw";
-            confetti.style.backgroundColor =
-              colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.animationDelay = Math.random() * 2 + "s";
-            confetti.style.borderRadius = Math.random() > 0.5 ? "50%" : "0";
-            confettiContainer.appendChild(confetti);
-          }
-
-          setTimeout(() => {
-            confettiContainer.innerHTML = "";
-            confettiContainer.classList.remove("active");
-          }, 5000);
-        }
-
-        // Modals
-        function showYesModal() {
-          document.getElementById("yesModal").classList.add("active");
-          createConfetti();
-        }
-
-        function showNoModal() {
-          document.getElementById("noModal").classList.add("active");
-        }
-
-        function closeModal(modalId) {
-          document.getElementById(modalId).classList.remove("active");
-        }
 
         // Close modal on outside click
         document.querySelectorAll(".modal").forEach((modal) => {
           modal.addEventListener("click", (e) => {
-            if (e.target === modal) {
-              modal.classList.remove("active");
-            }
+            if (e.target === modal) modal.classList.remove("active");
           });
         });
 
-        // Easter egg: No button runs away sometimes
+        // Easter egg: No button runs away
         const noBtn = document.querySelector(".btn-no");
         let runAwayCount = 0;
 
@@ -800,7 +789,7 @@
         noBtn.addEventListener("mouseleave", () => {
           noBtn.style.transform = "";
         });
-      } // end initializeApp
+      }
     </script>
   </body>
 </html>
